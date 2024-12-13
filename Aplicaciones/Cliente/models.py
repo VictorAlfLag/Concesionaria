@@ -15,7 +15,7 @@ class Propietario(models.Model):
     apellido_pro = models.CharField(max_length=50)
     email_pro = models.CharField(max_length=100)
     telefono_pro = models.CharField(max_length=15)
-    fkid_ciu = models.ForeignKey(Ciudad, on_delete=models.CASCADE)
+    fkid_ciu = models.ForeignKey(Ciudad, on_delete=models.CASCADE, db_column='fkid_ciu')
     
     class Meta:
         managed = False  # Indica que Django no gestione esta tabla
@@ -41,8 +41,8 @@ class Vehiculo(models.Model):
     id_veh = models.AutoField(primary_key=True)
     anio_veh = models.IntegerField()
     placa_veh = models.CharField(max_length=25)
-    fkid_mod = models.ForeignKey(Modelo, on_delete=models.CASCADE)
-    fkid_col = models.ForeignKey(Color, on_delete=models.CASCADE)
+    fkid_mod = models.ForeignKey(Modelo, on_delete=models.CASCADE, db_column='fkid_mod')
+    fkid_col = models.ForeignKey(Color, on_delete=models.CASCADE, db_column='fkid_col')
     
     class Meta:
         managed = False  # Indica que Django no gestione esta tabla
@@ -51,8 +51,8 @@ class Vehiculo(models.Model):
 class Factura(models.Model):
     id_fac = models.AutoField(primary_key=True)
     precio_fac = models.DecimalField(max_digits=10, decimal_places=2)
-    fkid_pro = models.ForeignKey(Propietario, on_delete=models.CASCADE)
-    fkid_veh = models.ForeignKey(Vehiculo, on_delete=models.CASCADE)
+    fkid_pro = models.ForeignKey(Propietario, on_delete=models.CASCADE, db_column='fkid_pro')
+    fkid_veh = models.ForeignKey(Vehiculo, on_delete=models.CASCADE, db_column='fkid_veh')
     
     class Meta:
         managed = False  # Indica que Django no gestione esta tabla
