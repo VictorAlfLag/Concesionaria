@@ -104,8 +104,8 @@
                 <div class="collapse navbar-collapse" id="navbarCollapse">
                     <div class="navbar-nav ms-auto py-0">
                         <a href="{% url 'home' %}" class="nav-item nav-link active">Home</a>
-                        <a href="" class="nav-item nav-link">Registro de Pilotos</a>
-                        <a href="" class="nav-item nav-link">Registro de Aviones</a>
+                        <a href="{% url 'listar_ciudad' %}" class="nav-item nav-link">CIUDAD</a>
+                        <a href="{% url 'listar_propietario' %}" class="nav-item nav-link">PERSONAL</a>
                         <a href="" class="nav-item nav-link">Registro de Licencias</a>
                     </div>
                     <button class="btn btn-primary btn-md-square border-secondary mb-3 mb-md-3 mb-lg-0 me-3" data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fas fa-search"></i></button>
@@ -181,19 +181,19 @@
             </div>
         </div>
         <!-- Footer End -->
-    {% if messages %}
-        {% for mensaje in messages %}
-                {% if mensaje.tags == 'success' %}
-                    <script>
-                        Swal.fire({
-                            title: "CONFIRMACION",
-                            text: "{{mensaje}}",
-                            icon: "success"
-                        });
-                    </script>
-                {% endif %}
-        {% endfor %}
-    {% endif %}
+        {% if messages %}
+            {% for mensaje in messages %}
+                    {% if mensaje.tags == 'success' %}
+                        <script>
+                            Swal.fire({
+                                title: "CONFIRMACION",
+                                text: "{{mensaje}}",
+                                icon: "success"
+                            });
+                        </script>
+                    {% endif %}
+            {% endfor %}
+        {% endif %}
 
 
     <!-- Popper and Bootstrap JS -->
@@ -251,9 +251,6 @@
     <!-- Template Javascript -->
     <script src="{% static 'Plantilla/Travisa-1.0.0/js/main.js' %}"></script>
 
-    <script>
-        $('#tabla_ciudad').DataTable();
-    </script>
     </body>
 
 </html>

@@ -83,7 +83,12 @@
     </div>
     <script type="text/javascript">
         $(document).ready(function() {
-            $('.editar-ciudad').on('click', function() {
+            // Inicializa DataTables
+            var table = $('#tabla_ciudad').DataTable();
+        
+            // Maneja el clic en el botón de editar
+            $('#tabla_ciudad').on('click', 'a.editar-ciudad', function(event) {
+                event.preventDefault();
                 var ciudadId = $(this).data('id');
                 $.ajax({
                     url: `/obtener_ciudad/${ciudadId}/`,
@@ -97,7 +102,27 @@
                     }
                 });
             });
-        });        
+        
+            // Maneja el envío del formulario
+            $('#formActualizar').on('submit', function(event) {
+                event.preventDefault();
+                var formData = $(this).serialize();
+                $.ajax({
+                    url: $(this).attr('action'),
+                    method: 'POST',
+                    data: formData,
+                    success: function(response) {
+                        // Actualiza la tabla después de la actualización exitosa
+                        table.ajax.reload();
+                        $('#form_actualizar').modal('hide');
+                    },
+                    error: function(error) {
+                        console.log('Error:', error);
+                    }
+                });
+            });
+        });
+               
     </script>
 {% endblock %}
 

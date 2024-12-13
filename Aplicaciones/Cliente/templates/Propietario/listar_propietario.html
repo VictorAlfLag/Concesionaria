@@ -1,0 +1,166 @@
+{% extends '../plantilla.html' %}
+
+{% load static %}
+{% block body %}
+    <div class="container">
+        <h1 class="text-center">PROPIETARIO</h1>
+        <div class="d-flex">
+            <button type="button" class="btn btn-primary ms-auto" data-bs-toggle="modal" data-bs-target="#form_register"><i class="bi bi-plus-lg"></i><strong>NUEVO</strong></button>
+        </div>
+
+        <div class="modal fade" id="form_register" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form action="{% url 'insertar_propietario'%}" method="post">
+                        {% csrf_token %}
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Nuevo propietario</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">                            
+                            <label>Nombre:</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre">                            
+                            <label>Apellido:</label>
+                            <input type="text" class="form-control" id="apellido" name="apellido">
+                            <label>Correo:</label>
+                            <input type="email" class="form-control" id="correo" name="correo">
+                            <label>Telefono:</label>
+                            <input type="text" class="form-control" id="telefono" name="telefono">
+                            <label>Ciudad:</label>
+                            <select name="ciudad" id="ciudad" class="form-control">
+                                <option value="">-- Seleccione una ciudad --</option>
+                                {% for ciudadTemporal in ciudad %}
+                                    <option value="{{ciudadTemporal.id_ciu}}">{{ciudadTemporal.nombre_ciu}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="modal fade" id="form_actualizar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form action="{% url 'actualizar_prpietario' %}" method="post">
+                        {% csrf_token %}
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Actualizar vehiculo</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="text" class="form-control" id="id_act" name="id_act" hidden>
+                            <label>Nombre:</label>
+                            <input type="text" class="form-control" id="nombre_act" name="nombre_act">                            
+                            <label>Apellido:</label>
+                            <input type="text" class="form-control" id="apellido_act" name="apellido_act">
+                            <label>Correo:</label>
+                            <input type="text" class="form-control" id="correo_act" name="correo_act">
+                            <label>Telefono:</label>
+                            <input type="text" class="form-control" id="telefono_act" name="telefono_act">
+                            <label>Ciudad:</label>
+                            <select name="ciudad_act" id="ciudad_act" class="form-control">
+                                <option value="">-- Seleccione una ciudad --</option>
+                                {% for ciudadTemporal in ciudad %}
+                                    <option value="{{ciudadTemporal.id_ciu}}">{{ciudadTemporal.nombre_ciu}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-success">Actualizar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+        <table class="table table-striped" id="tabla_propietario">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>NOMBRE</th>
+                    <th>APELLIDO</th>
+                    <th>CORREO</th>                    
+                    <th>TELEFONO</th>
+                    <th>CIUDAD</th>   
+                    <th>ACCION</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for propietarioTemporal in propietario %}
+                    <tr>
+                        <td>{{propietarioTemporal.id_pro}}</td>
+                        <td>{{propietarioTemporal.nombre_pro}}</td>                        
+                        <td>{{propietarioTemporal.apellido_pro}}</td>
+                        <td>{{propietarioTemporal.email_pro}}</td>                        
+                        <td>{{propietarioTemporal.telefono_pro}}</td>
+                        <td>{{propietarioTemporal.fkid_ciu.nombre_ciu}}</td>
+                        <td>
+                            <a href="#" class="btn btn-success editar-ciudad" data-id="{{ propietarioTemporal.id_pro }}" data-bs-toggle="modal" data-bs-target="#form_actualizar">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                            <a href="{% url 'eliminar_propietario' propietarioTemporal.id_pro %}" class="btn btn-danger" onclick="return confirm('¿Estás seguro que deseas eliminar?');">
+                                <i class="bi bi-trash3-fill"></i>
+                            </a>
+                        </td>
+                    </tr>                
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            // Inicializa DataTables
+            var table = $('#tabla_propietario').DataTable();
+        
+            // Maneja el clic en el botón de editar
+            $(document).on('click', 'a.editar-ciudad', function(event) {
+                event.preventDefault();
+                var propietarioId = $(this).data('id');
+                $.ajax({
+                    url: `/obtener_propietario/${propietarioId}/`,
+                    method: 'GET',
+                    success: function(data) {
+                        $('#id_act').val(data.id_pro);
+                        $('#nombre_act').val(data.nombre_pro);                        
+                        $('#apellido_act').val(data.apellido_pro);
+                        $('#correo_act').val(data.email_pro);                        
+                        $('#telefono_act').val(data.telefono_pro);
+                        $('#ciudad_act').val(data.fkid_ciu);
+                    },
+                    error: function(error) {
+                        console.log('Error:', error);
+                    }
+                });
+            });
+        
+            // Maneja el envío del formulario
+            $('#formActualizar').on('submit', function(event) {
+                event.preventDefault();
+                var formData = $(this).serialize();
+                $.ajax({
+                    url: $(this).attr('action'),
+                    method: 'POST',
+                    data: formData,
+                    success: function(response) {
+                        // Actualiza la tabla después de la actualización exitosa
+                        table.ajax.reload();
+                        $('#form_actualizar').modal('hide');
+                    },
+                    error: function(error) {
+                        console.log('Error:', error);
+                    }
+                });
+            });
+        });
+               
+    </script>
+{% endblock %}
+
