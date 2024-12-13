@@ -13,6 +13,25 @@ urlpatterns = [
     path('obtener_propietario/<id>/', views.obtener_propietario, name='obtener_propietario'),
     path('actualizar_prpietario/', views.actualizar_prpietario, name='actualizar_prpietario'),
     path('eliminar_propietario/<id>', views.eliminar_propietario, name='eliminar_propietario'),
-    
-    
+    path('listar_color/', views.listar_color, name='listar_color'),
+    path('insertar_color/', views.insertar_color, name='insertar_color'),
+    path('obtener_color/<int:id>/', views.obtener_color, name='obtener_color'),
+    path('actualizar_color/', views.actualizar_color, name='actualizar_color'),
+    path('eliminar_color/<int:id>/', views.eliminar_color, name='eliminar_color'),
+    path('listar_modelo/', views.listar_modelo, name='listar_modelo'),
+    path('insertar_modelo/', views.insertar_modelo, name='insertar_modelo'),
+    path('obtener_modelo/<int:id>/', views.obtener_modelo, name='obtener_modelo'),
+    path('actualizar_modelo/', views.actualizar_modelo, name='actualizar_modelo'),
+    path('eliminar_modelo/<int:id>/', views.eliminar_modelo, name='eliminar_modelo'),
+    path('listar_vehiculo/', views.listar_vehiculo, name='listar_vehiculo'),
+    path('insertar_vehiculo/', views.insertar_vehiculo, name='insertar_vehiculo'),
+    path('obtener_vehiculo/<id>/', views.obtener_vehiculo, name='obtener_vehiculo'),
+    path('actualizar_vehiculo/', views.actualizar_vehiculo, name='actualizar_vehiculo'),
+    path('eliminar_vehiculo/<id>/', views.eliminar_vehiculo, name='eliminar_vehiculo'),
+    path('listar_factura/', views.listar_factura, name='listar_factura'),
+    path('insertar_factura/', views.insertar_factura, name='insertar_factura'),
+    path('obtener_factura/<id>/', views.obtener_factura, name='obtener_factura'),
+    path('actualizar_factura/', views.actualizar_factura, name='actualizar_factura'),
+    path('eliminar_factura/<id>/', views.eliminar_factura, name='eliminar_factura'),
+   
 ]

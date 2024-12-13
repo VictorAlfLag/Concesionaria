@@ -1,0 +1,126 @@
+{% extends '../plantilla.html' %}
+
+{% load static %}
+{% block body %}
+    <div class="container">
+        <h1 class="text-center">MODELO</h1>
+        <div class="d-flex">
+            <button type="button" class="btn btn-primary ms-auto" data-bs-toggle="modal" data-bs-target="#form_register"><i class="bi bi-plus-lg"></i><strong>NUEVO</strong></button>
+        </div>
+
+        <div class="modal fade" id="form_register" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form action="{% url 'insertar_modelo' %}" method="post">
+                        {% csrf_token %}
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Nuevo Modelo</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <label>Nombre:</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="form_actualizar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form action="{% url 'actualizar_modelo' %}" method="post">
+                        {% csrf_token %}
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Actualizar Modelo</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="text" class="form-control" id="id_act" name="id_act" hidden>
+                            <label>Nombre:</label>
+                            <input type="text" class="form-control" id="nombre_act" name="nombre_act">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-success">Actualizar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <table class="table table-striped" id="tabla_modelo">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>MODELO</th>
+                    <th>ACCION</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for modeloTemporal in modelo %}
+                    <tr>
+                        <td>{{ modeloTemporal.id_mod }}</td>
+                        <td>{{ modeloTemporal.nombre_mod }}</td>
+                        <td>
+                            <a href="#" class="btn btn-success editar-modelo" data-id="{{ modeloTemporal.id_mod }}" data-bs-toggle="modal" data-bs-target="#form_actualizar">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                            <a href="{% url 'eliminar_modelo' modeloTemporal.id_mod %}" class="btn btn-danger" onclick="return confirm('¿Estás seguro que deseas eliminar?');">
+                                <i class="bi bi-trash3-fill"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            // Inicializa DataTables
+            var table = $('#tabla_modelo').DataTable();
+
+            // Maneja el clic en el botón de editar
+            $('#tabla_modelo').on('click', 'a.editar-modelo', function(event) {
+                event.preventDefault();
+                var modeloId = $(this).data('id');
+                $.ajax({
+                    url: `/obtener_modelo/${modeloId}/`,
+                    method: 'GET',
+                    success: function(data) {
+                        $('#id_act').val(data.id_mod);
+                        $('#nombre_act').val(data.nombre_mod);
+                    },
+                    error: function(error) {
+                        console.log('Error:', error);
+                    }
+                });
+            });
+
+            // Maneja el envío del formulario
+            $('#formActualizar').on('submit', function(event) {
+                event.preventDefault();
+                var formData = $(this).serialize();
+                $.ajax({
+                    url: $(this).attr('action'),
+                    method: 'POST',
+                    data: formData,
+                    success: function(response) {
+                        // Actualiza la tabla después de la actualización exitosa
+                        table.ajax.reload();
+                        $('#form_actualizar').modal('hide');
+                    },
+                    error: function(error) {
+                        console.log('Error:', error);
+                    }
+                });
+            });
+        });
+
+    </script>
+{% endblock %}

@@ -1,0 +1,168 @@
+{% extends '../plantilla.html' %}
+
+{% load static %}
+{% block body %}
+    <div class="container">
+        <h1 class="text-center">VEHICULO</h1>
+        <div class="d-flex">
+            <button type="button" class="btn btn-primary ms-auto" data-bs-toggle="modal" data-bs-target="#form_register"><i class="bi bi-plus-lg"></i><strong>NUEVO</strong></button>
+        </div>
+
+        <div class="modal fade" id="form_register" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form action="{% url 'insertar_vehiculo'%}" method="post">
+                        {% csrf_token %}
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Nuevo vehiculo</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">                            
+                            <label>Año:</label>
+                            <input type="number" class="form-control" id="anio" name="anio">                            
+                            <label>Placa:</label>
+                            <input type="text" class="form-control" id="placa" name="placa">
+                            <label>Modelo:</label>
+                            <select name="modelo" id="modelo" class="form-control">
+                                <option value="">-- Seleccione un modelo --</option>
+                                {% for modeloTemporal in modelos %}
+                                    <option value="{{modeloTemporal.id_mod}}">{{modeloTemporal.nombre_mod}}</option>
+                                {% endfor %}
+                            </select>
+                            <label>Color:</label>
+                            <select name="color" id="color" class="form-control">
+                                <option value="">-- Seleccione un color --</option>
+                                {% for colorTemporal in colores %}
+                                    <option value="{{colorTemporal.id_col}}">{{colorTemporal.nombre_col}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="modal fade" id="form_actualizar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form action="{% url 'actualizar_vehiculo' %}" method="post">
+                        {% csrf_token %}
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Actualizar vehiculo</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="text" class="form-control" id="id_act" name="id_act" hidden>
+                            <label>Año:</label>
+                            <input type="number" class="form-control" id="anio_act" name="anio_act">                            
+                            <label>Placa:</label>
+                            <input type="text" class="form-control" id="placa_act" name="placa_act">
+                            <label>Modelo:</label>
+                            <select name="modelo_act" id="modelo_act" class="form-control">
+                                <option value="">-- Seleccione un modelo --</option>
+                                {% for modeloTemporal in modelos %}
+                                    <option value="{{modeloTemporal.id_mod}}">{{modeloTemporal.nombre_mod}}</option>
+                                {% endfor %}
+                            </select>
+                            <label>Color:</label>
+                            <select name="color_act" id="color_act" class="form-control">
+                                <option value="">-- Seleccione un color --</option>
+                                {% for colorTemporal in colores %}
+                                    <option value="{{colorTemporal.id_col}}">{{colorTemporal.nombre_col}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-success">Actualizar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+        <table class="table table-striped" id="tabla_vehiculo">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>AÑO</th>
+                    <th>PLACA</th>
+                    <th>MODELO</th>
+                    <th>COLOR</th>
+                    <th>ACCION</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for vehiculoTemporal in vehiculos %}
+                    <tr>
+                        <td>{{vehiculoTemporal.id_veh}}</td>
+                        <td>{{vehiculoTemporal.anio_veh}}</td>                        
+                        <td>{{vehiculoTemporal.placa_veh}}</td>
+                        <td>{{vehiculoTemporal.fkid_mod.nombre_mod}}</td>
+                        <td>{{vehiculoTemporal.fkid_col.nombre_col}}</td>
+                        <td>
+                            <a href="#" class="btn btn-success editar-vehiculo" data-id="{{ vehiculoTemporal.id_veh }}" data-bs-toggle="modal" data-bs-target="#form_actualizar">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                            <a href="{% url 'eliminar_vehiculo' vehiculoTemporal.id_veh %}" class="btn btn-danger" onclick="return confirm('¿Estás seguro que deseas eliminar?');">
+                                <i class="bi bi-trash3-fill"></i>
+                            </a>
+                        </td>
+                    </tr>                
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            // Inicializa DataTables
+            var table = $('#tabla_vehiculo').DataTable();
+        
+            // Maneja el clic en el botón de editar
+            $(document).on('click', 'a.editar-vehiculo', function(event) {
+                event.preventDefault();
+                var vehiculoId = $(this).data('id');
+                $.ajax({
+                    url: `/obtener_vehiculo/${vehiculoId}/`,
+                    method: 'GET',
+                    success: function(data) {
+                        $('#id_act').val(data.id_veh);
+                        $('#anio_act').val(data.anio_veh);                        
+                        $('#placa_act').val(data.placa_veh);
+                        $('#modelo_act').val(data.fkid_mod);
+                        $('#color_act').val(data.fkid_col);
+                    },
+                    error: function(error) {
+                        console.log('Error:', error);
+                    }
+                });
+            });
+        
+            // Maneja el envío del formulario
+            $('#formActualizar').on('submit', function(event) {
+                event.preventDefault();
+                var formData = $(this).serialize();
+                $.ajax({
+                    url: $(this).attr('action'),
+                    method: 'POST',
+                    data: formData,
+                    success: function(response) {
+                        // Actualiza la tabla después de la actualización exitosa
+                        table.ajax.reload();
+                        $('#form_actualizar').modal('hide');
+                    },
+                    error: function(error) {
+                        console.log('Error:', error);
+                    }
+                });
+            });
+        });
+               
+    </script>
+{% endblock %}

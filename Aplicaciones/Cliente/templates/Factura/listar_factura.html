@@ -1,0 +1,161 @@
+{% extends '../plantilla.html' %}
+
+{% load static %}
+{% block body %}
+    <div class="container">
+        <h1 class="text-center">FACTURA</h1>
+        <div class="d-flex">
+            <button type="button" class="btn btn-primary ms-auto" data-bs-toggle="modal" data-bs-target="#form_register"><i class="bi bi-plus-lg"></i><strong>NUEVO</strong></button>
+        </div>
+
+        <!-- Modal: Insertar Factura -->
+        <div class="modal fade" id="form_register" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form action="{% url 'insertar_factura' %}" method="post">
+                        {% csrf_token %}
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Nueva Factura</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">                            
+                            <label>Precio:</label>
+                            <input type="number" step="0.01" class="form-control" id="precio" name="precio">                            
+                            <label>Propietario:</label>
+                            <select name="fkid_pro" id="fkid_pro" class="form-control">
+                                <option value="">-- Seleccione un propietario --</option>
+                                {% for propietario in propietarios %}
+                                    <option value="{{propietario.id_pro}}">{{propietario.nombre_pro}} {{propietario.apellido_pro}}</option>
+                                {% endfor %}
+                            </select>
+                            <label>Vehículo:</label>
+                            <select name="fkid_veh" id="fkid_veh" class="form-control">
+                                <option value="">-- Seleccione un vehículo --</option>
+                                {% for vehiculo in vehiculos %}
+                                    <option value="{{vehiculo.id_veh}}">{{vehiculo.modelo_veh}} ({{vehiculo.placa_veh}})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal: Actualizar Factura -->
+        <div class="modal fade" id="form_actualizar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form action="{% url 'actualizar_factura' %}" method="post">
+                        {% csrf_token %}
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Actualizar Factura</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="text" class="form-control" id="id_act" name="id_act" hidden>
+                            <label>Precio:</label>
+                            <input type="number" step="0.01" class="form-control" id="precio_act" name="precio_act">                            
+                            <label>Propietario:</label>
+                            <select name="fkid_pro_act" id="fkid_pro_act" class="form-control">
+                                <option value="">-- Seleccione un propietario --</option>
+                                {% for propietario in propietarios %}
+                                    <option value="{{propietario.id_pro}}">{{propietario.nombre_pro}} {{propietario.apellido_pro}}</option>
+                                {% endfor %}
+                            </select>
+                            <label>Vehículo:</label>
+                            <select name="fkid_veh_act" id="fkid_veh_act" class="form-control">
+                                <option value="">-- Seleccione un vehículo --</option>
+                                {% for vehiculo in vehiculos %}
+                                    <option value="{{vehiculo.id_veh}}">{{vehiculo.modelo_veh}} ({{vehiculo.placa_veh}})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-success">Actualizar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla: Listar Facturas -->
+        <table class="table table-striped" id="tabla_factura">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>PRECIO</th>
+                    <th>PROPIETARIO</th>
+                    <th>VEHÍCULO</th>
+                    <th>ACCIÓN</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for factura in facturas %}
+                    <tr>
+                        <td>{{factura.id_fac}}</td>
+                        <td>{{factura.precio_fac}}</td>                        
+                        <td>{{factura.fkid_pro.nombre_pro}} {{factura.fkid_pro.apellido_pro}}</td>
+                        <td>{{factura.fkid_veh.modelo_veh}} ({{factura.fkid_veh.placa_veh}})</td>
+                        <td>
+                            <a href="#" class="btn btn-success editar-factura" data-id="{{ factura.id_fac }}" data-bs-toggle="modal" data-bs-target="#form_actualizar">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                            <a href="{% url 'eliminar_factura' factura.id_fac %}" class="btn btn-danger" onclick="return confirm('¿Estás seguro que deseas eliminar?');">
+                                <i class="bi bi-trash3-fill"></i>
+                            </a>
+                        </td>
+                    </tr>                
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            // Inicializa DataTables
+            var table = $('#tabla_factura').DataTable();
+        
+            // Maneja el clic en el botón de editar
+            $(document).on('click', 'a.editar-factura', function(event) {
+                event.preventDefault();
+                var facturaId = $(this).data('id');
+                $.ajax({
+                    url: `/obtener_factura/${facturaId}/`,
+                    method: 'GET',
+                    success: function(data) {
+                        $('#id_act').val(data.id_fac);
+                        $('#precio_act').val(data.precio_fac);                        
+                        $('#fkid_pro_act').val(data.fkid_pro);
+                        $('#fkid_veh_act').val(data.fkid_veh);
+                    },
+                    error: function(error) {
+                        console.log('Error:', error);
+                    }
+                });
+            });
+        
+            // Maneja el envío del formulario
+            $('#formActualizar').on('submit', function(event) {
+                event.preventDefault();
+                var formData = $(this).serialize();
+                $.ajax({
+                    url: $(this).attr('action'),
+                    method: 'POST',
+                    data: formData,
+                    success: function(response) {
+                        table.ajax.reload();
+                        $('#form_actualizar').modal('hide');
+                    },
+                    error: function(error) {
+                        console.log('Error:', error);
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}
