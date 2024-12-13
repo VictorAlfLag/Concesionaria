@@ -5,4 +5,4 @@ def home(request):
     return render(request, 'home.html')
 
 def listar_propietario(request):
-    return render(request, 'Propietarios/listar_propieretario.html')
+    return render(request, 'Propietarios/listar_vehiculos.html')
