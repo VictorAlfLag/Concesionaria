@@ -25,14 +25,14 @@
                             <label>Modelo:</label>
                             <select name="modelo" id="modelo" class="form-control">
                                 <option value="">-- Seleccione un modelo --</option>
-                                {% for modeloTemporal in modelos %}
+                                {% for modeloTemporal in modelo %}
                                     <option value="{{modeloTemporal.id_mod}}">{{modeloTemporal.nombre_mod}}</option>
                                 {% endfor %}
                             </select>
                             <label>Color:</label>
                             <select name="color" id="color" class="form-control">
                                 <option value="">-- Seleccione un color --</option>
-                                {% for colorTemporal in colores %}
+                                {% for colorTemporal in color %}
                                     <option value="{{colorTemporal.id_col}}">{{colorTemporal.nombre_col}}</option>
                                 {% endfor %}
                             </select>
@@ -64,14 +64,14 @@
                             <label>Modelo:</label>
                             <select name="modelo_act" id="modelo_act" class="form-control">
                                 <option value="">-- Seleccione un modelo --</option>
-                                {% for modeloTemporal in modelos %}
+                                {% for modeloTemporal in modelo %}
                                     <option value="{{modeloTemporal.id_mod}}">{{modeloTemporal.nombre_mod}}</option>
                                 {% endfor %}
                             </select>
                             <label>Color:</label>
                             <select name="color_act" id="color_act" class="form-control">
                                 <option value="">-- Seleccione un color --</option>
-                                {% for colorTemporal in colores %}
+                                {% for colorTemporal in color %}
                                     <option value="{{colorTemporal.id_col}}">{{colorTemporal.nombre_col}}</option>
                                 {% endfor %}
                             </select>
@@ -98,7 +98,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for vehiculoTemporal in vehiculos %}
+                {% for vehiculoTemporal in vehiculo %}
                     <tr>
                         <td>{{vehiculoTemporal.id_veh}}</td>
                         <td>{{vehiculoTemporal.anio_veh}}</td>                        
